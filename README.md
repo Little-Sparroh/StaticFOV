@@ -1,4 +1,4 @@
-# FOV Toggles
+# Static FOV
 
 A BepInEx mod for Mycopunk that lets you independently enable or disable aim FOV zoom and sprint FOV changes.
 
@@ -37,7 +37,7 @@ dotnet build --configuration Release
 2. The mod will be installed to the correct directory automatically
 
 **Manual Installation**:
-1. Place the built `FOVToggles.dll` in your `<Mycopunk Directory>/BepInEx/plugins/` folder
+1. Place the built `StaticFOV.dll` in your `<Mycopunk Directory>/BepInEx/plugins/` folder
 
 ### Executing
 
@@ -47,7 +47,7 @@ The mod loads automatically through BepInEx when the game starts. Check the BepI
 
 Settings are stored at:
 
-`<Mycopunk Directory>/BepInEx/config/sparroh.fovtoggles.cfg`
+`<Mycopunk Directory>/BepInEx/config/sparroh.staticfov.cfg`
 
 | Setting | Default | Description |
 |---------|---------|-------------|

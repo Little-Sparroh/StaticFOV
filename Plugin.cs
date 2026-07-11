@@ -12,8 +12,8 @@ using System.Reflection;
 [MycoMod(null, ModFlags.IsClientSide)]
 public class SparrohPlugin : BaseUnityPlugin
 {
-    public const string PluginGUID = "sparroh.fovtoggles";
-    public const string PluginName = "FOVToggles";
+    public const string PluginGUID = "sparroh.staticfov";
+    public const string PluginName = "StaticFOV";
     public const string PluginVersion = "1.0.0";
 
     internal static new ManualLogSource Logger;

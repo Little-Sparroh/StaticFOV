@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
-        <AssemblyName>FOVToggles</AssemblyName>
-        <Product>FOVToggles</Product>
+        <AssemblyName>StaticFOV</AssemblyName>
+        <Product>StaticFOV</Product>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
         <RestoreAdditionalProjectSources>
@@ -11,7 +11,7 @@
             https://nuget.bepinex.dev/v3/index.json;
             https://nuget.samboy.dev/v3/index.json
         </RestoreAdditionalProjectSources>
-        <RootNamespace>FOVToggles</RootNamespace>
+        <RootNamespace>StaticFOV</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

@@ -3,9 +3,9 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "Sparroh"
-name = "FOVToggles"
+name = "StaticFOV"
 description = "Toggle aim and sprint FOV changes on or off independently."
-websiteUrl = "https://github.com/Little-Sparroh/FOVToggles"
+websiteUrl = "https://github.com/Little-Sparroh/StaticFOV"
 containsNsfwContent = false
 
 [package.dependencies]
@@ -17,8 +17,8 @@ readme = "README.md"
 outdir = "build"
 
 [[build.copy]]
-source = "bin/Release/net48/FOVToggles.dll"
-target = "BepInEx/plugins/FOVToggles.dll"
+source = "bin/Release/net48/StaticFOV.dll"
+target = "BepInEx/plugins/StaticFOV.dll"
 
 [[build.copy]]
 source = "CHANGELOG.md"
