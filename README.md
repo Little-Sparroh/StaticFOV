@@ -1,73 +1,71 @@
-# DisableAimFOV
+# FOV Toggles
 
-A BepInEx mod for MycoPunk that removes FOV zoom changes when aiming to reduce claustrophobia.
+A BepInEx mod for Mycopunk that lets you independently enable or disable aim FOV zoom and sprint FOV changes.
 
-## Description
+## Features
 
-This client-side mod eliminates the field of view (FOV) zoom that occurs when aiming weapons in MycoPunk. Many players experience discomfort or claustrophobia from the narrowing of the field of view during aiming, and this mod maintains the default FOV at all times, creating a more comfortable and less disorienting gameplay experience.
+- **Aim FOV Change**: Toggle the FOV zoom that normally happens when aiming. When disabled, aiming no longer zooms the camera FOV.
+- **Sprint FOV Change**: Toggle the FOV punch that normally happens while sprinting. When disabled, sprinting no longer alters FOV.
 
-The mod uses Harmony to patch the PlayerLook aiming system methods (UpdateAiming and UpdateCameraFOV), replacing the aiming FOV transitions with static default FOV values. This creates smooth aiming without the jarring zoom effects.
+Both options default to **enabled** (vanilla behavior). Turn either off in the config if you prefer a stable FOV.
 
 ## Getting Started
 
 ### Dependencies
 
-* MycoPunk (base game)
-* [BepInEx](https://github.com/BepInEx/BepInEx) - Version 5.4.2403 or compatible
+* Mycopunk (base game)
+* [BepInEx](https://github.com/BepInEx/BepInEx) - Version 5.4.2403 or compatible (BepInExPack_Mycopunk)
 * .NET Framework 4.8
+* HarmonyLib (included via NuGet / BepInEx)
 
 ### Building/Compiling
 
 1. Clone this repository
 2. Open the solution file in Visual Studio, Rider, or your preferred C# IDE
-3. Build the project in Release mode
+3. Build the project in Release mode to generate the `.dll` file
 
-Alternatively, use dotnet CLI:
+Alternatively, use the dotnet CLI:
+
 ```bash
 dotnet build --configuration Release
 ```
 
 ### Installing
 
-**Option 1: Via Thunderstore (Recommended)**
-1. Download and install using the Thunderstore Mod Manager
-2. Search for "DisableAimFOV" under MycoPunk community
-3. Install and enable the mod
+**Via Thunderstore (Recommended)**:
+1. Download and install via Thunderstore Mod Manager / r2modman
+2. The mod will be installed to the correct directory automatically
 
-**Option 2: Manual Installation**
-1. Ensure BepInEx is installed for MycoPunk
-2. Copy `DisableAimFOV.dll` from the build folder
-3. Place it in `<MycoPunk Game Directory>/BepInEx/plugins/`
-4. Launch the game
+**Manual Installation**:
+1. Place the built `FOVToggles.dll` in your `<Mycopunk Directory>/BepInEx/plugins/` folder
 
-### Executing program
+### Executing
 
-Once the mod is loaded, FOV changes when aiming are automatically disabled. The game will maintain your default field of view at all times.
+The mod loads automatically through BepInEx when the game starts. Check the BepInEx console for a load confirmation message.
 
-### Configuration
+## Configuration
 
-The mod can be configured through BepInEx Configuration Manager:
+Settings are stored at:
 
-**General Settings:**
-- `DisableFOVChange`: (Default: true) If enabled, FOV remains constant when aiming instead of zooming in
+`<Mycopunk Directory>/BepInEx/config/sparroh.fovtoggles.cfg`
 
-Changes require a game restart to take effect.
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Aim FOV Change | `true` | Enables FOV zoom when aiming |
+| Sprint FOV Change | `true` | Enables FOV changes while sprinting |
+
+Config changes are reloaded when the config file is updated.
 
 ## Help
 
-* **Aiming feels different?** This mod intentionally removes the FOV zoom effect to reduce claustrophobia
-* **Performance issues?** The mod only patches aiming logic and shouldn't impact game performance
-* **Conflicts with camera mods?** If you have other camera or FOV modifications, they may interfere with this mod
-* **Configuration not working?** Ensure you restart the game after changing BepInEx config settings
-* **Only applies to weapons?** The mod specifically targets weapon aiming FOV changes in PlayerLook class
-* **Not working with certain weapons?** All weapons that normally zoom should be affected by this mod
+* **Mod not loading?** Verify BepInEx is installed correctly and check console logs for errors
+* **FOV still changing?** Confirm the relevant config option is set to `false` and that the config file was reloaded
+* **Conflicts?** Other camera/FOV mods may override or fight these patches
 
 ## Authors
 
-* Sparroh
-* funlennysub (original mod template)
-* [@DomPizzie](https://twitter.com/dompizzie) (README template)
+- Sparroh
 
 ## License
 
-* This project is licensed under the MIT License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the LICENSE file for details

@@ -1,51 +1,28 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using HarmonyLib;
-using System.Reflection;
-using UnityEngine;
 using Pigeon.Movement;
-using Pigeon.Math;
+using System;
+using System.IO;
+using System.Reflection;
 
 [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
+
 [MycoMod(null, ModFlags.IsClientSide)]
-public class DisableAimFOVPlugin : BaseUnityPlugin
+public class SparrohPlugin : BaseUnityPlugin
 {
-    public const string PluginGUID = "sparroh.disableaimfov";
-    public const string PluginName = "DisableAimFOV";
-    public const string PluginVersion = "1.0.1";
+    public const string PluginGUID = "sparroh.fovtoggles";
+    public const string PluginName = "FOVToggles";
+    public const string PluginVersion = "1.0.0";
 
-    internal static ConfigEntry<bool> disableFOVChange;
+    internal static new ManualLogSource Logger;
 
-    private void Awake()
-    {
-        disableFOVChange = Config.Bind("General", "DisableFOVChange", true, "If true, disables FOV zoom changes when aiming.");
+    internal static ConfigEntry<bool> aimFOVChange;
+    internal static ConfigEntry<bool> sprintFOVChange;
 
-        AimPatches.defaultFOVGetter = AccessTools.PropertyGetter(typeof(PlayerLook), "DefaultFOV");
-        AimPatches.isAimingPLField = AccessTools.Field(typeof(PlayerLook), "isAiming");
-        AimPatches.fovField = AccessTools.Field(typeof(PlayerLook), "_fov");
-        AimPatches.aimFOVPLField = AccessTools.Field(typeof(PlayerLook), "aimFOV");
-        AimPatches.aimDurationPLField = AccessTools.Field(typeof(PlayerLook), "aimDuration");
-        AimPatches.aimStateChangeTimeField = AccessTools.Field(typeof(PlayerLook), "aimStateChangeTime");
+    private FileSystemWatcher configWatcher;
 
-        var harmony = new Harmony(PluginGUID);
-        Logger.LogInfo($"{PluginName} loaded successfully.");
-
-        MethodInfo updateAimingMethod = AccessTools.Method(typeof(PlayerLook), "UpdateAiming");
-        if (updateAimingMethod != null)
-        {
-            harmony.Patch(updateAimingMethod, prefix: new HarmonyMethod(typeof(AimPatches), nameof(AimPatches.UpdateAimingPrefix)));
-        }
-
-        MethodInfo updateCameraFOVMethod = AccessTools.Method(typeof(PlayerLook), "UpdateCameraFOV");
-        if (updateCameraFOVMethod != null)
-        {
-            harmony.Patch(updateCameraFOVMethod, postfix: new HarmonyMethod(typeof(AimPatches), nameof(AimPatches.UpdateCameraFOVPostfix)));
-        }
-    }
-}
-
-internal class AimPatches
-{
     internal static MethodInfo defaultFOVGetter;
     internal static FieldInfo isAimingPLField;
     internal static FieldInfo fovField;
@@ -53,43 +30,71 @@ internal class AimPatches
     internal static FieldInfo aimDurationPLField;
     internal static FieldInfo aimStateChangeTimeField;
 
-    public static bool UpdateAimingPrefix(PlayerLook __instance)
+    internal static SparrohPlugin Instance { get; set; }
+
+    private void Awake()
     {
-        if (DisableAimFOVPlugin.disableFOVChange.Value && isAimingPLField != null && aimStateChangeTimeField != null && aimDurationPLField != null && aimFOVPLField != null && defaultFOVGetter != null && fovField != null)
+        Instance = this;
+        Logger = base.Logger;
+
+        aimFOVChange = Config.Bind("General", "Aim FOV Change", true, "If true, enables FOV zoom changes when aiming.");
+        sprintFOVChange = Config.Bind("General", "Sprint FOV Change", true, "If true, enables FOV changes while sprinting.");
+
+        try
         {
-            bool isAiming = (bool)isAimingPLField.GetValue(__instance);
-            if (isAiming)
-            {
-                float aimStateChangeTime = (float)aimStateChangeTimeField.GetValue(__instance);
-                aimStateChangeTime = Mathf.Min(aimStateChangeTime + Time.deltaTime / (float)aimDurationPLField.GetValue(__instance), 1f);
-                aimStateChangeTimeField.SetValue(__instance, aimStateChangeTime);
-                float defaultFOV = (float)defaultFOVGetter.Invoke(__instance, null);
-                aimFOVPLField.SetValue(__instance, defaultFOV);
-                fovField.SetValue(__instance, Mathf.LerpUnclamped(defaultFOV, defaultFOV, EaseFunctions.EaseInOutCubic(aimStateChangeTime)));
-            }
-            else if ((float)aimStateChangeTimeField.GetValue(__instance) > 0f)
-            {
-                float aimStateChangeTime = (float)aimStateChangeTimeField.GetValue(__instance);
-                aimStateChangeTime = Mathf.Max(aimStateChangeTime - Time.deltaTime / (float)aimDurationPLField.GetValue(__instance), 0f);
-                aimStateChangeTimeField.SetValue(__instance, aimStateChangeTime);
-                float defaultFOV = (float)defaultFOVGetter.Invoke(__instance, null);
-                aimFOVPLField.SetValue(__instance, defaultFOV);
-                fovField.SetValue(__instance, Mathf.LerpUnclamped(defaultFOV, defaultFOV, EaseFunctions.EaseInOutCubic(aimStateChangeTime)));
-            }
-            return false;
+            SetupFileWatcher();
         }
-        return true;
+        catch (Exception ex)
+        {
+            Logger.LogError($"Error setting up file watcher: {ex.Message}");
+        }
+
+        try
+        {
+            SetupAccessTools();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Error setting up access tools: {ex.Message}");
+        }
+
+        try
+        {
+            var harmony = new Harmony(PluginGUID);
+            harmony.PatchAll(typeof(AimFOVPatches));
+            harmony.PatchAll(typeof(SprintFOVPatches));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Error applying patches: {ex.Message}");
+        }
+
+        Logger.LogInfo($"{PluginName} loaded successfully.");
     }
 
-    public static void UpdateCameraFOVPostfix(PlayerLook __instance)
+    private void SetupFileWatcher()
     {
-        if (DisableAimFOVPlugin.disableFOVChange.Value && isAimingPLField != null && fovField != null && defaultFOVGetter != null)
+        configWatcher = new FileSystemWatcher(Paths.ConfigPath, $"{PluginGUID}.cfg");
+        configWatcher.Changed += (s, e) => { Config.Reload(); };
+        configWatcher.EnableRaisingEvents = true;
+    }
+
+    private void SetupAccessTools()
+    {
+        defaultFOVGetter = AccessTools.PropertyGetter(typeof(PlayerLook), "DefaultFOV");
+        isAimingPLField = AccessTools.Field(typeof(PlayerLook), "isAiming");
+        fovField = AccessTools.Field(typeof(PlayerLook), "_fov");
+        aimFOVPLField = AccessTools.Field(typeof(PlayerLook), "aimFOV");
+        aimDurationPLField = AccessTools.Field(typeof(PlayerLook), "aimDuration");
+        aimStateChangeTimeField = AccessTools.Field(typeof(PlayerLook), "aimStateChangeTime");
+    }
+
+    private void OnDestroy()
+    {
+        if (configWatcher != null)
         {
-            object isAimingObj = isAimingPLField.GetValue(__instance);
-            if (isAimingObj is bool isAiming && isAiming)
-            {
-                fovField.SetValue(__instance, defaultFOVGetter.Invoke(__instance, null));
-            }
+            configWatcher.EnableRaisingEvents = false;
+            configWatcher.Dispose();
         }
     }
 }

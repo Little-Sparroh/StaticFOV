@@ -3,9 +3,9 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "Sparroh"
-name = "DisableAimFov"
-description = "Removes the FOV change while aiming. Claustrophobia be gone!"
-websiteUrl = "https://github.com/Little-Sparroh/DisableAimFOV"
+name = "FOVToggles"
+description = "Toggle aim and sprint FOV changes on or off independently."
+websiteUrl = "https://github.com/Little-Sparroh/FOVToggles"
 containsNsfwContent = false
 
 [package.dependencies]
@@ -17,8 +17,8 @@ readme = "README.md"
 outdir = "build"
 
 [[build.copy]]
-source = "bin/Release/net48/DisableAimFOV.dll"
-target = "BepInEx/plugins/DisableAimFOV.dll"
+source = "bin/Release/net48/FOVToggles.dll"
+target = "BepInEx/plugins/FOVToggles.dll"
 
 [[build.copy]]
 source = "CHANGELOG.md"
@@ -34,5 +34,3 @@ communities = [ "mycopunk" ]
 
 [publish.categories]
 mycopunk = [ "client" ]
-
-
