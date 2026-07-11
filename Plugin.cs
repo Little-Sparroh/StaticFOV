@@ -37,8 +37,8 @@ public class SparrohPlugin : BaseUnityPlugin
         Instance = this;
         Logger = base.Logger;
 
-        aimFOVChange = Config.Bind("General", "Aim FOV Change", true, "If true, enables FOV zoom changes when aiming.");
-        sprintFOVChange = Config.Bind("General", "Sprint FOV Change", true, "If true, enables FOV changes while sprinting.");
+        aimFOVChange = Config.Bind("General", "Aim FOV Change", false, "If true, enables FOV zoom changes when aiming.");
+        sprintFOVChange = Config.Bind("General", "Sprint FOV Change", false, "If true, enables FOV changes while sprinting.");
 
         try
         {
