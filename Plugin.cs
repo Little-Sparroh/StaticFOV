@@ -14,12 +14,12 @@ public class SparrohPlugin : BaseUnityPlugin
 {
     public const string PluginGUID = "sparroh.staticfov";
     public const string PluginName = "StaticFOV";
-    public const string PluginVersion = "1.1.0";
+    public const string PluginVersion = "1.2.0";
 
     internal static new ManualLogSource Logger;
 
     internal static ConfigEntry<bool> aimFOVChange;
-    internal static ConfigEntry<bool> sprintFOVChange;
+    internal static ConfigEntry<bool> additiveFOVChange;
 
     private FileSystemWatcher configWatcher;
 
@@ -37,8 +37,17 @@ public class SparrohPlugin : BaseUnityPlugin
         Instance = this;
         Logger = base.Logger;
 
-        aimFOVChange = Config.Bind("General", "Aim FOV Change", false, "If true, enables FOV zoom changes when aiming.");
-        sprintFOVChange = Config.Bind("General", "Sprint FOV Change", false, "If true, enables FOV changes while sprinting.");
+        aimFOVChange = Config.Bind(
+            "General",
+            "Aim FOV Change",
+            false,
+            "If true, enables FOV zoom changes when aiming.");
+
+        additiveFOVChange = Config.Bind(
+            "General",
+            "Additive FOV Change",
+            false,
+            "If true, enables temporary FOV punches from AddFOV (sprint, melee, dash, blink, FOV bursts, etc.). If false, all additive FOV changes are blocked.");
 
         try
         {
@@ -62,14 +71,14 @@ public class SparrohPlugin : BaseUnityPlugin
         {
             var harmony = new Harmony(PluginGUID);
             harmony.PatchAll(typeof(AimFOVPatches));
-            harmony.PatchAll(typeof(SprintFOVPatches));
+            harmony.PatchAll(typeof(AdditiveFOVPatches));
         }
         catch (Exception ex)
         {
             Logger.LogError($"Error applying patches: {ex.Message}");
         }
 
-        Logger.LogInfo($"{PluginName} loaded successfully.");
+        Logger.LogInfo($"{PluginName} v{PluginVersion} loaded. Aim FOV={aimFOVChange.Value}, Additive FOV={additiveFOVChange.Value}");
     }
 
     private void SetupFileWatcher()

@@ -1,13 +1,13 @@
 # Static FOV
 
-A BepInEx mod for Mycopunk that lets you independently enable or disable aim FOV zoom and sprint FOV changes.
+A BepInEx mod for Mycopunk that lets you disable aim FOV zoom and all temporary additive FOV punches independently.
 
 ## Features
 
 - **Aim FOV Change**: Toggle the FOV zoom that normally happens when aiming. When disabled, aiming no longer zooms the camera FOV.
-- **Sprint FOV Change**: Toggle the FOV punch that normally happens while sprinting. When disabled, sprinting no longer alters FOV.
+- **Additive FOV Change**: Toggle all temporary FOV punches that go through `PlayerLook.AddFOV` (sprint, melee, air dash, blink, FOV bursts, and similar). When disabled, those effects no longer alter FOV.
 
-Both options default to **enabled** (vanilla behavior). Turn either off in the config if you prefer a stable FOV.
+Both options default to **disabled** (stable FOV). Set either to `true` in the config if you want vanilla behavior for that path.
 
 ## Getting Started
 
@@ -51,10 +51,12 @@ Settings are stored at:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Aim FOV Change | `true` | Enables FOV zoom when aiming |
-| Sprint FOV Change | `true` | Enables FOV changes while sprinting |
+| Aim FOV Change | `false` | Enables FOV zoom when aiming |
+| Additive FOV Change | `false` | Enables temporary FOV punches (sprint, melee, dash, blink, bursts, etc.) |
 
 Config changes are reloaded when the config file is updated.
+
+**Note:** Aim zoom does not use `AddFOV`; it is controlled only by **Aim FOV Change**. Additive punches are controlled only by **Additive FOV Change**.
 
 ## Help
 

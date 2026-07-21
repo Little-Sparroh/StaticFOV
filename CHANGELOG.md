@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0
+
+- Replaced sprint-only FOV toggle with **Additive FOV Change**
+- Blocking additive FOV now stops all `PlayerLook.AddFOV` punches (sprint, melee, dash, blink, FOV bursts, etc.)
+- Kept independent **Aim FOV Change** toggle (aim zoom does not use AddFOV)
+- Simplified AddFOV patch (no stack-trace filtering)
+
 ## 1.1.0
 
 - Initial release

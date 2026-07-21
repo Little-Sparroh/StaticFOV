@@ -1,27 +1,14 @@
 using HarmonyLib;
 using Pigeon.Movement;
-using System.Diagnostics;
 
 [HarmonyPatch]
-public static class SprintFOVPatches
+public static class AdditiveFOVPatches
 {
-    [HarmonyPatch(typeof(PlayerLook), "AddFOV")]
+    [HarmonyPatch(typeof(PlayerLook), nameof(PlayerLook.AddFOV))]
     [HarmonyPrefix]
-    public static bool Prefix(ref float value)
+    public static bool AddFOVPrefix()
     {
-        if (SparrohPlugin.sprintFOVChange.Value)
-            return true;
-
-        StackTrace stackTrace = new StackTrace();
-
-        foreach (var frame in stackTrace.GetFrames())
-        {
-            var method = frame.GetMethod();
-            if (method?.ReflectedType?.Name == "Player" && method.Name.Contains("Update"))
-            {
-                return false;
-            }
-        }
-        return true;
+        // When disabled, block every temporary FOV punch (sprint, melee, dash, blink, FOV bursts, etc.).
+        return SparrohPlugin.additiveFOVChange == null || SparrohPlugin.additiveFOVChange.Value;
     }
 }

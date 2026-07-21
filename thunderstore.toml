@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "Sparroh"
 name = "StaticFOV"
-description = "Toggle aim and sprint FOV changes on or off independently."
+description = "Toggle aim FOV zoom and all additive FOV punches (sprint, melee, dash, etc.) independently."
 websiteUrl = "https://github.com/Little-Sparroh/StaticFOV"
 containsNsfwContent = false
 
